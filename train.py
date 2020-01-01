@@ -34,7 +34,7 @@ def main(args=None):
                         default='./csv/val_annots_div.csv')
     parser.add_argument('--weights', help='ckpt', default='./csv/coco_resnet_50_map_0_335_state_dict.pt')
     parser.add_argument('--depth', help='Resnet depth, must be one of 18, 34, 50, 101, 152', type=int, default=50)
-    parser.add_argument('--epochs', help='Number of epochs', type=int, default=40)
+    parser.add_argument('--epochs', help='Number of epochs', type=int, default=100)
     parser = parser.parse_args(args)
 
     # Create the data loaders
@@ -44,8 +44,8 @@ def main(args=None):
                              transform=transforms.Compose([Normalizer(), Resizer()]))
     print('Num training images: {}'.format(len(dataset_train)))
     print('Num validation images: {}'.format(len(dataset_val)))
-    sampler = AspectRatioBasedSampler(dataset_train, batch_size=2, drop_last=False)
-    dataloader_train = DataLoader(dataset_train, num_workers=2, collate_fn=collater, batch_sampler=sampler)
+    sampler = AspectRatioBasedSampler(dataset_train, batch_size=4, drop_last=False)
+    dataloader_train = DataLoader(dataset_train, num_workers=4, collate_fn=collater, batch_sampler=sampler)
     # sampler_val = AspectRatioBasedSampler(dataset_val, batch_size=3, drop_last=False)
     # dataloader_val = DataLoader(dataset_val, num_workers=3, collate_fn=collater, batch_sampler=sampler_val)
 
@@ -66,8 +66,8 @@ def main(args=None):
     # PATH = '/home/github/ruler_detection/logs/Dec30_15-57-21/csv_retinanet_alldiv_best.pth'
     # retinanet = torch.load(PATH)
 
-    retinanet = retinanet.cuda()
-    # retinanet = torch.nn.DataParallel(retinanet).cuda()
+    # retinanet = retinanet.cuda()
+    retinanet = torch.nn.DataParallel(retinanet).cuda()
     retinanet.training = True
     optimizer = optim.Adam(retinanet.parameters(), lr=1e-4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, verbose=True)
@@ -77,7 +77,7 @@ def main(args=None):
 
     for epoch_num in range(parser.epochs):
         retinanet.train()
-        # retinanet.module.freeze_bn()
+        retinanet.module.freeze_bn()
         epoch_loss = []
         for iter_num, data in enumerate(dataloader_train):
             optimizer.zero_grad()
@@ -111,7 +111,7 @@ def main(args=None):
         scheduler.step(np.mean(epoch_loss))
         if mAP > mAP_best:
             mAP_best = mAP
-            torch.save(retinanet, os.path.join(log_dir, '{}_retinanet_alldiv_best.pth'.format(parser.dataset)))
+            torch.save(retinanet.module, os.path.join(log_dir, '{}_retinanet_alldiv_best.pth'.format(parser.dataset)))
 
 
 if __name__ == '__main__':

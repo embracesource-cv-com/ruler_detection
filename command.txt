@@ -1,0 +1,50 @@
+
+python json2csv.py
+
+python train.py
+
+
+
+#=====================all div
+python eval.py  \
+    --csv_path ./csv/val_annots_div.csv \
+    --out_path ./out/div_all_eval \
+    --ret_weights /home/github/xiangya_ruler/logs/Dec24_14-31-57/csv_retinanet_alldiv_best.pth \
+    --res_weights /home/mh/medical/Retinanet_Detection/pytorch-retinanet/csv/resnet_div.pth
+
+
+python inferece.py  \
+    --ret_weights /home/github/xiangya_ruler/logs/Dec24_11-31-56/csv_retinanet_alldiv_best.pth \
+    --res_weights /home/mh/medical/Retinanet_Detection/pytorch-retinanet/csv/resnet_div.pth
+    
+    
+    
+#=====================6 7div
+python eval.py  \
+    --csv_path ./csv/val_annots_div.csv \
+    --out_path ./out/div_67_eval \
+    --ret_weights /home/github/xiangya_ruler/logs/Dec24_15-52-49/csv_retinanet_alldiv_best.pth \
+    --res_weights /home/mh/medical/Retinanet_Detection/pytorch-retinanet/csv/resnet_div.pth
+
+python eval_detection.py  \
+    --csv_path ./csv/val_annots_div.csv \
+    --out_path ./out/div_67_eval \
+    --ret_weights /home/github/xiangya_ruler/logs/Dec24_15-52-49/csv_retinanet_alldiv_best.pth \
+    --res_weights /home/mh/medical/Retinanet_Detection/pytorch-retinanet/csv/resnet_div.pth
+    
+#=====================0-10 div
+python eval_detection.py  \
+    --images_path ./csv/train_annots_div.csv \
+    --out_path ./out/div_0-10_train \
+    --ret_weights /home/github/xiangya_ruler/logs/Dec26_11-27-09_map83/csv_retinanet_alldiv_best.pth \
+    --threshold 0.1
+    
+python eval_detection.py  \
+    --images_path ./csv/val_annots_div.csv \
+    --out_path ./out/div_0-10_eval \
+    --ret_weights /home/github/xiangya_ruler/logs/Dec26_11-27-09_map83/csv_retinanet_alldiv_best.pth
+
+python eval_detection.py  \
+    --images_path /dataset/medical/DF_data/my_ruler_data\
+    --out_path ./out/div_0-10_my_ruler_eval \
+    --ret_weights /home/github/xiangya_ruler/logs/Dec26_11-27-09_map83/csv_retinanet_alldiv_best.pth
